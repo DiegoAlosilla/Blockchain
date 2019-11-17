@@ -1,7 +1,6 @@
 package main
 
 import (
-	"strconv"
 	"bufio"
 	"encoding/base64"
 	"encoding/json"
@@ -21,12 +20,13 @@ const (
 	NEWBLOCK  MessageType = 3
 	SETBLOCKS MessageType = 4
 	PROTOCOL              = "tcp"
-	NEWTRANS  	          = 1
+	NEWTRANS              = 1
 	LISTTRANS             = 2
 	LISTHOSTS             = 3
 )
 
 /******************BCIP**********************/
+
 var HOSTS []string
 var LOCALHOST string
 
@@ -140,10 +140,9 @@ func BCIPServer(end chan<- int, updatedBlocks chan<- int) {
 /******************BLOCKCHAIN**MedicalRecord********************/
 
 type Transaccion struct {
-	Monto		float64
-	Origen		string
-	Destino 	string
-
+	Monto   string
+	Origen  string
+	Destino string
 }
 
 type Block struct {
@@ -266,12 +265,16 @@ func main() {
 		if action == NEWTRANS {
 			transaccion := Transaccion{}
 			fmt.Println("- - - Registro - - -")
+
 			fmt.Print("Ingrese Monto: ")
-			montoString, _ := in.ReadString('\n')
-			transaccion.Monto, _ = strconv.ParseFloat(montoString, 64)
+			transaccion.Monto, _ = in.ReadString('\n')
+
+			fmt.Print("Ingrese Origen: ")
+			transaccion.Origen, _ = in.ReadString('\n')
+
 			fmt.Print("Ingrese Destino: ")
 			transaccion.Destino, _ = in.ReadString('\n')
-			
+
 			newBlock := Block{
 				Data: transaccion,
 			}
