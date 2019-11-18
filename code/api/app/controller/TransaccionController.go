@@ -31,7 +31,14 @@ func (controller *TransaccionController) RegistrarTransaccion(response http.Resp
 
 func (controller *TransaccionController) ListarTransaccionAll(response http.ResponseWriter, request *http.Request) {
 
-	json.NewEncoder(response).Encode(transaccionesBD)
+	if transaccionesBD == nil {
+		vacio := []string{}
+		// vacio = nil
+		json.NewEncoder(response).Encode(vacio)
+	} else {
+		json.NewEncoder(response).Encode(transaccionesBD)
+	}
+
 	fmt.Print("transacciones: ", transaccionesBD)
 	fmt.Println()
 }
