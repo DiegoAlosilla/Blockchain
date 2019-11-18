@@ -11,6 +11,165 @@ import (
 	"time"
 )
 
+///https://www.youtube.com/watch?v=zVqczFZr124
+type Transaccion struct {
+	Monto   float64
+	Origen  string
+	Destino string
+}
+
+type Block struct {
+	Index        int
+	Timestamp    time.Time
+	Data         Transaccion
+	PreviousHash string
+	Hash         string
+}
+
+func (block *Block) CalculateHash() string {
+	src := fmt.Sprintf("%d-%s-%s", block.Index, block.Timestamp.String(), block.Data)
+	return base64.StdEncoding.EncodeToString([]byte(src))
+}
+
+type BlockChain struct {
+	Chain []Block
+}
+
+func (blockChain *BlockChain) CreateGenesisBlock() Block {
+	block := Block{
+		Index:        0,
+		Timestamp:    time.Now(),
+		Data:         Transaccion{},
+		PreviousHash: "0",
+	}
+	block.Hash = block.CalculateHash()
+	return block
+}
+
+func (blockChain *BlockChain) GetLatesBlock() Block {
+	n := len(blockChain.Chain)
+	return blockChain.Chain[n-1]
+}
+
+func (blockChain *BlockChain) AddBlock(block Block) {
+	block.Timestamp = time.Now()
+	block.Index = blockChain.GetLatesBlock().Index + 1
+	block.PreviousHash = blockChain.GetLatesBlock().Hash
+	block.Hash = block.CalculateHash()
+	blockChain.Chain = append(blockChain.Chain, block)
+}
+
+func (blockChain *BlockChain) IsChainValid() bool {
+	n := len(blockChain.Chain)
+	for i := 1; i < n; i++ {
+		currentBlock := blockChain.Chain[i]
+		previousBlock := blockChain.Chain[i-1]
+		if currentBlock.Hash != currentBlock.CalculateHash() {
+			return false
+		}
+		if currentBlock.PreviousHash != previousBlock.Hash {
+			return false
+		}
+	}
+	return true
+}
+
+func CreateBlockChain() BlockChain {
+	bc := BlockChain{}
+	genesisBlock := bc.CreateGenesisBlock()
+	bc.Chain = append(bc.Chain, genesisBlock)
+	return bc
+}
+
+var localBlockChain BlockChain
+
+func PrintTransacciones() {
+	blocks := localBlockChain.Chain[1:]
+	for index, block := range blocks {
+		transaccion := block.Data
+		fmt.Printf("- - - Transaccion No. %d - - - \n", index+1)
+
+		fmt.Printf("\t\nOrigen:  %s", transaccion.Origen)
+		fmt.Printf("\t\nDestino:  %s", transaccion.Destino)
+		fmt.Printf("\t\nMonto:  %f", transaccion.Monto)
+
+		//transaccionBytes, _ := json.MarshalIndent(transaccion, "", "\t")
+		//jsonTransaccion := string(transaccionBytes)
+		//fmt.Println(jsonTransaccion)
+	}
+}
+
+func PrintHosts() {
+	fmt.Println("- - - HOSTS - - -")
+	const first = 0
+	fmt.Printf("\t%s (Mi host)\n", LOCALHOST)
+	for _, host := range HOSTS {
+		fmt.Printf("\t%s\n", host)
+	}
+}
+
+func main() {
+	var dest string
+	end := make(chan int)
+	updatedBlocks := make(chan int)
+	fmt.Print("Ingrese su host: ")
+	fmt.Scanf("%s\n", &LOCALHOST)
+	fmt.Print("Ingrese host de destino(Vacio por ser el primer nodo): ")
+	fmt.Scanf("%s\n", &dest)
+	go BCIPServer(end, updatedBlocks)
+	localBlockChain = CreateBlockChain()
+	if dest != "" {
+		requestBody := &RequestBody{
+			Message:     LOCALHOST,
+			MessageType: NEWHOST,
+		}
+		requestMessage, _ := json.Marshal(requestBody)
+		SendMessage(dest, string(requestMessage))
+		requestBody.MessageType = NEWBLOCK
+		requestMessage, _ = json.Marshal(requestBody)
+		SendMessage(dest, string(requestMessage))
+		<-updatedBlocks
+	}
+	var action int
+	fmt.Println("App de Transaciones Transparentes para los ciudadnos")
+	in := bufio.NewReader(os.Stdin)
+	for {
+		fmt.Print("\n\n1. Crear Transaccion\n2. Lista de Transacciones\n3. Lista de Hosts\n")
+		fmt.Print("Ingrese opcion: 1 o 2 o 3):")
+		fmt.Scanf("%d\n", &action)
+		if action == NEWTRANS {
+			transaccion := Transaccion{}
+			fmt.Println("- - - Registro - - -")
+
+			fmt.Print("Ingrese Origen: ")
+			transaccion.Origen, _ = in.ReadString('\n')
+
+			fmt.Print("Ingrese Destino: ")
+			transaccion.Destino, _ = in.ReadString('\n')
+
+			fmt.Print("Ingrese Monto: ")
+			fmt.Scanf("%f", &transaccion.Monto)
+
+			newBlock := Block{
+				Data: transaccion,
+			}
+			localBlockChain.AddBlock(newBlock)
+			BroadcastBlock(newBlock)
+			fmt.Println("Registro Satisfactorio")
+			time.Sleep(2 * time.Second)
+			PrintTransacciones()
+		} else if action == LISTTRANS {
+			PrintTransacciones()
+		} else if action == LISTHOSTS {
+			PrintHosts()
+		}
+	}
+	<-end
+}
+
+var HOSTS []string
+var LOCALHOST string
+
 type MessageType int32
 
 const (
@@ -24,11 +183,6 @@ const (
 	LISTTRANS             = 2
 	LISTHOSTS             = 3
 )
-
-/******************BCIP**********************/
-
-var HOSTS []string
-var LOCALHOST string
 
 type RequestBody struct {
 	Message     string
@@ -135,159 +289,4 @@ func BCIPServer(end chan<- int, updatedBlocks chan<- int) {
 		}
 	}
 	end <- 0
-}
-
-/******************BLOCKCHAIN**MedicalRecord********************/
-
-type Transaccion struct {
-	Monto   string
-	Origen  string
-	Destino string
-}
-
-type Block struct {
-	Index        int
-	Timestamp    time.Time
-	Data         Transaccion
-	PreviousHash string
-	Hash         string
-}
-
-func (block *Block) CalculateHash() string {
-	src := fmt.Sprintf("%d-%s-%s", block.Index, block.Timestamp.String(), block.Data)
-	return base64.StdEncoding.EncodeToString([]byte(src))
-}
-
-type BlockChain struct {
-	Chain []Block
-}
-
-func (blockChain *BlockChain) CreateGenesisBlock() Block {
-	block := Block{
-		Index:        0,
-		Timestamp:    time.Now(),
-		Data:         Transaccion{},
-		PreviousHash: "0",
-	}
-	block.Hash = block.CalculateHash()
-	return block
-}
-
-func (blockChain *BlockChain) GetLatesBlock() Block {
-	n := len(blockChain.Chain)
-	return blockChain.Chain[n-1]
-}
-
-func (blockChain *BlockChain) AddBlock(block Block) {
-	block.Timestamp = time.Now()
-	block.Index = blockChain.GetLatesBlock().Index + 1
-	block.PreviousHash = blockChain.GetLatesBlock().Hash
-	block.Hash = block.CalculateHash()
-	blockChain.Chain = append(blockChain.Chain, block)
-}
-
-func (blockChain *BlockChain) IsChainValid() bool {
-	n := len(blockChain.Chain)
-	for i := 1; i < n; i++ {
-		currentBlock := blockChain.Chain[i]
-		previousBlock := blockChain.Chain[i-1]
-		if currentBlock.Hash != currentBlock.CalculateHash() {
-			return false
-		}
-		if currentBlock.PreviousHash != previousBlock.Hash {
-			return false
-		}
-	}
-	return true
-}
-
-func CreateBlockChain() BlockChain {
-	bc := BlockChain{}
-	genesisBlock := bc.CreateGenesisBlock()
-	bc.Chain = append(bc.Chain, genesisBlock)
-	return bc
-}
-
-var localBlockChain BlockChain
-
-/******************MAIN**********************/
-
-func PrintTransacciones() {
-	blocks := localBlockChain.Chain[1:]
-	for index, block := range blocks {
-		transaccion := block.Data
-		fmt.Printf("- - - Transaccion No. %d - - - \n", index+1)
-
-		transaccionBytes, _ := json.MarshalIndent(transaccion, "", "\t")
-		jsonTransaccion := string(transaccionBytes)
-		fmt.Println(jsonTransaccion)
-	}
-}
-
-func PrintHosts() {
-	fmt.Println("- - - HOSTS - - -")
-	const first = 0
-	fmt.Printf("\t%s (Mi host)\n", LOCALHOST)
-	for _, host := range HOSTS {
-		fmt.Printf("\t%s\n", host)
-	}
-}
-
-func main() {
-	var dest string
-	end := make(chan int)
-	updatedBlocks := make(chan int)
-	fmt.Print("Ingrese su host: ")
-	fmt.Scanf("%s\n", &LOCALHOST)
-	fmt.Print("Ingrese host de destino(Vacio por ser el primer nodo): ")
-	fmt.Scanf("%s\n", &dest)
-	go BCIPServer(end, updatedBlocks)
-	localBlockChain = CreateBlockChain()
-	if dest != "" {
-		requestBody := &RequestBody{
-			Message:     LOCALHOST,
-			MessageType: NEWHOST,
-		}
-		requestMessage, _ := json.Marshal(requestBody)
-		SendMessage(dest, string(requestMessage))
-		requestBody.MessageType = NEWBLOCK
-		requestMessage, _ = json.Marshal(requestBody)
-		SendMessage(dest, string(requestMessage))
-		<-updatedBlocks
-	}
-	var action int
-	fmt.Println("App de Transaciones Transparentes para los ciudadnos")
-	in := bufio.NewReader(os.Stdin)
-	for {
-		fmt.Print("1. Crear Transaccion\n2. Lista de Transacciones\n3. Lista de Hosts\n")
-		fmt.Print("Ingrese opcion: 1 o 2 o 3):")
-		fmt.Scanf("%d\n", &action)
-		if action == NEWTRANS {
-			transaccion := Transaccion{}
-			fmt.Println("- - - Registro - - -")
-
-			fmt.Print("Ingrese Monto: ")
-			transaccion.Monto, _ = in.ReadString('\n')
-
-			fmt.Print("Ingrese Origen: ")
-			transaccion.Origen, _ = in.ReadString('\n')
-
-			fmt.Print("Ingrese Destino: ")
-			transaccion.Destino, _ = in.ReadString('\n')
-
-			newBlock := Block{
-				Data: transaccion,
-			}
-			localBlockChain.AddBlock(newBlock)
-			BroadcastBlock(newBlock)
-			fmt.Println("Registro Satisfactorio")
-			time.Sleep(2 * time.Second)
-			PrintTransacciones()
-		} else if action == LISTTRANS {
-			PrintTransacciones()
-		} else if action == LISTHOSTS {
-			PrintHosts()
-		}
-	}
-	<-end
 }
