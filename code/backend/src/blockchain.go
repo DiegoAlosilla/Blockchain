@@ -11,7 +11,8 @@ import (
 	"time"
 )
 
-///https://www.youtube.com/watch?v=zVqczFZr124
+//https://www.youtube.com/watch?v=zVqczFZr124
+
 type Transaccion struct {
 	Monto   float64
 	Origen  string
@@ -87,7 +88,7 @@ func PrintTransacciones() {
 	blocks := localBlockChain.Chain[1:]
 	for index, block := range blocks {
 		transaccion := block.Data
-		fmt.Printf("- - - Transaccion No. %d - - - \n", index+1)
+		]
 
 		fmt.Printf("\t\nOrigen:  %s", transaccion.Origen)
 		fmt.Printf("\t\nDestino:  %s", transaccion.Destino)
