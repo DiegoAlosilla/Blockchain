@@ -31,6 +31,7 @@ func InitServer() Server {
 
 	transaccionRouter := router.PathPrefix("/app").Subrouter()
 	transaccionRouter.HandleFunc("/registro", transaccionController.RegistrarNodo).Methods("POST")
+	transaccionRouter.HandleFunc("/transaccion", transaccionController.RegistrarTransaccion).Methods("POST")
 	transaccionRouter.HandleFunc("/transacciones", transaccionController.ListarTransaccionAll).Methods("GET")
 
 	api.router = router
