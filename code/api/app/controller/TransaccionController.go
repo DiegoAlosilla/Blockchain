@@ -25,6 +25,7 @@ func (controller *TransaccionController) RegistrarTransaccion(response http.Resp
 
 	transaccionesBD = append(transaccionesBD, transaccion)
 	json.NewEncoder(response).Encode(true)
+
 	fmt.Print("new Transaccion: ", transaccion)
 	fmt.Println()
 }
@@ -33,9 +34,18 @@ func (controller *TransaccionController) ListarTransaccionAll(response http.Resp
 
 	if transaccionesBD == nil {
 		vacio := []string{}
-		json.NewEncoder(response).Encode(vacio)
+		// json.NewEncoder(response).Encode(vacio)
+		dataJson, _ := json.Marshal(vacio)
+		response.Header().Set("Content-Type", "application/json")
+		// response.WriteHeader(http.Status.OK)
+		response.Write(dataJson)
 	} else {
-		json.NewEncoder(response).Encode(transaccionesBD)
+		dataJson, _ := json.Marshal(transaccionesBD)
+		response.Header().Set("Content-Type", "application/json")
+		// response.WriteHeader(http.Status.OK)
+		response.Write(dataJson)
+
+		// json.NewEncoder(response).Encode(transaccionesBD)
 	}
 
 	fmt.Print("transacciones: ", transaccionesBD)
