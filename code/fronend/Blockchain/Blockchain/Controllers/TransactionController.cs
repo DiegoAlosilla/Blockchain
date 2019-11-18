@@ -2,11 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using System.Transactions;
 using Blockchain.API;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Blockchain.Controllers
 {
@@ -18,14 +21,18 @@ namespace Blockchain.Controllers
         // GET: Transaction
         public ActionResult Index()
         {
+         
             IEnumerable<Transaction> transacciones = null;
-            var response = client.Initial().GetAsync("transaction");
+            var response = client.Initial().GetAsync("transacciones");
+            
             response.Wait();
-            var result = response.Result;
+            var result = response.Result;            
             if (result.IsSuccessStatusCode)
             {
                 var readTask = result.Content.ReadAsAsync<IList<Transaction>>();
+               // var readTask = result.Content.ReadAsStringAsync();
                 readTask.Wait();
+                //transacciones = JsonConvert.DeserializeObject<IList<Transaction>>(readTask.Result);
                 transacciones = readTask.Result;
             }
             else //web api sent error response 
@@ -56,7 +63,7 @@ namespace Blockchain.Controllers
         public ActionResult Create(Transaction transaction)
         {
 
-            var postTask = client.Initial().PostAsJsonAsync("app/transaccion", transaction);
+            var postTask = client.Initial().PostAsJsonAsync("transaccion", transaction);
             postTask.Wait();
             var result = postTask.Result;
             if (result.IsSuccessStatusCode)
