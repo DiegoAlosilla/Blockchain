@@ -7,6 +7,8 @@ namespace Blockchain.Models
 {
     public class Transaction
     {
-        
+        public string monto { get; set; }
+        public string origen { get; set; }
+        public string destino { get; set; }
     }
 }
