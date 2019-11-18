@@ -33,7 +33,6 @@ func (controller *TransaccionController) ListarTransaccionAll(response http.Resp
 
 	if transaccionesBD == nil {
 		vacio := []string{}
-		// vacio = nil
 		json.NewEncoder(response).Encode(vacio)
 	} else {
 		json.NewEncoder(response).Encode(transaccionesBD)
