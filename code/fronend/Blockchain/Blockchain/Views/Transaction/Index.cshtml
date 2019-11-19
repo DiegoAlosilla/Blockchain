@@ -8,11 +8,11 @@
 
 @*
 
-<td>
-    @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
-    @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
-    @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
-</td>*@
+    <td>
+        @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
+        @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
+        @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
+    </td>*@
 
 
 <section class="container-fluid p-0 section-banner" style="background-image: url(https://www.belatrixsf.com/wp-content/uploads/2018/07/banner-insights-big.jpg);">
@@ -32,7 +32,7 @@
 
 <section class="container module-section">
     <p>
-        <a asp-action="Create">AGREGAR NUEVA TRANSACCION</a>
+        @Html.ActionLink("Create", "Create", new {  port = @ViewBag.port }) |
     </p>
     <div class="row justify-content-center">
 

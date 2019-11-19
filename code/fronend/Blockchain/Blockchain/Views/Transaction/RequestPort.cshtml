@@ -1,0 +1,52 @@
+﻿@{
+    ViewData["Title"] = "RequestPort";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<section class="container-fluid p-0 section-banner" style="background-image: url(https://www.belatrixsf.com/wp-content/uploads/2018/07/banner-insights-big.jpg);">
+    <div class="container section-banner-content-container">
+        <div class="section-banner-content">
+            <div class="page-title">
+                <div class="page-text" style="padding-left: 0">
+                    <h1 class="subtitle-2 white-text"> Lista de Tranasacciones</h1>
+                    <div class="line-decoration"></div>
+                    <p class="p-type1 white-text">Transacciones realizadas</p>
+                </div>
+            </div>
+            <div class="my-clearfix"></div>
+        </div>
+    </div>
+</section>
+
+
+
+<section class="container-fluid" style=" background-image: url(https://www.belatrixsf.com/wp-content/themes/Belatrix/images/cta-bg.jpg)">
+    <div class="container py-5">
+        <div class="col-12 col-md-6 mx-auto">
+            <h2 class="text-center pt-5 pb-3 text-shadow text-white main-title">Ingresar Puerto de Conexion</h2>
+            
+        </div>
+        <div style="display:block; text-align:center">
+
+
+            @using (Html.BeginForm("Index", "Transaction"))
+            {
+                <div style="display:block">
+                    @Html.Label("Ingrese el puerto")
+                    @Html.TextBox("port")
+                    <input type="submit">
+                </div>
+            }
+
+          
+
+            <div>
+                <a asp-action="Index">Back to List</a>
+            </div>
+        </div>
+    </div>
+
+
+
+</section>
+

@@ -1,33 +1,37 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Threading.Tasks;
-
-using Blockchain.API;
+﻿using Blockchain.API;
 using Blockchain.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net.Http;
+using System.Threading.Tasks;
 
 namespace Blockchain.Controllers
 {
     public class TransactionController : Controller
     {
-        TransactionApi client = new TransactionApi();
+        private TransactionApi client = new TransactionApi();
         // GET: Transaction
-        public ActionResult Index()
+        
+        public ActionResult RequestPort()
         {
+ 
+            return View();
+        }
+
+        
+        public ActionResult Index(string port)
+        {
+            ViewBag.port = port;
             IEnumerable<Transaction> transacciones = null;
-            var response = client.Initial().GetAsync("transacciones");
+            Task<HttpResponseMessage> response = client.Initial(port).GetAsync("transacciones");
             response.Wait();
-            var result = response.Result;            
+            HttpResponseMessage result = response.Result;
             if (result.IsSuccessStatusCode)
             {
-                var readTask = result.Content.ReadAsAsync<IList<Transaction>>();
-               // var readTask = result.Content.ReadAsStringAsync();
+                Task<IList<Transaction>> readTask = result.Content.ReadAsAsync<IList<Transaction>>();
+                // var readTask = result.Content.ReadAsStringAsync();
                 readTask.Wait();
                 //transacciones = JsonConvert.DeserializeObject<IList<Transaction>>(readTask.Result);
                 transacciones = readTask.Result;
@@ -48,20 +52,21 @@ namespace Blockchain.Controllers
         }
 
         // GET: Transaction/Create
-        public ActionResult Create()
+        public ActionResult Create(string port)
         {
             return View();
         }
 
+
         // POST: Transaction/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(Transaction transaction)
+        public ActionResult Create(string port,Transaction transaction )
         {
 
-            var postTask = client.Initial().PostAsJsonAsync("transaccion", transaction);
+            Task<HttpResponseMessage> postTask = client.Initial(port).PostAsJsonAsync("transaccion", transaction);
             postTask.Wait();
-            var result = postTask.Result;
+            HttpResponseMessage result = postTask.Result;
             if (result.IsSuccessStatusCode)
             {
                 return RedirectToAction("Index");
