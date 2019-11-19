@@ -40,7 +40,7 @@ func InitServer(puerto string) Server {
 	transaccionRouter.HandleFunc("/unidos", transaccionController.TodaLaRed).Methods("GET")
 	transaccionRouter.HandleFunc("/unirse", transaccionController.UnirseALaRed).Methods("POST")
 	transaccionRouter.HandleFunc("/unidos", transaccionController.NotificandoLaRed).Methods("POST")
-
+	transaccionRouter.HandleFunc("/recivir", transaccionController.RecivirBlockChain).Methods("POST")
 	// transaccionRouter.HandleFunc("/myhost", transaccionController.MyInfoHost).Methods("GET")
 	api.router = router
 	return api
