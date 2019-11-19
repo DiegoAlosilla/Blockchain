@@ -1,13 +1,19 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 
 	"./config/server"
 )
 
+var PUERTO string
+
 func main() {
-	api := server.InitServer()
-	log.Fatal(http.ListenAndServe(":9000", api.Router()))
+	fmt.Print("Ingrese su Puerto: ")
+	fmt.Scanf("%s\n", &PUERTO)
+
+	api := server.InitServer(PUERTO)
+	log.Fatal(http.ListenAndServe(":"+PUERTO, api.Router()))
 }
