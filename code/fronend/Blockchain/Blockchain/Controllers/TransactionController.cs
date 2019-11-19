@@ -4,8 +4,9 @@ using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
-using System.Transactions;
+
 using Blockchain.API;
+using Blockchain.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
@@ -13,18 +14,14 @@ using Newtonsoft.Json.Linq;
 
 namespace Blockchain.Controllers
 {
-
-    
     public class TransactionController : Controller
     {
         TransactionApi client = new TransactionApi();
         // GET: Transaction
         public ActionResult Index()
         {
-         
             IEnumerable<Transaction> transacciones = null;
             var response = client.Initial().GetAsync("transacciones");
-            
             response.Wait();
             var result = response.Result;            
             if (result.IsSuccessStatusCode)
@@ -40,7 +37,6 @@ namespace Blockchain.Controllers
                 transacciones = Enumerable.Empty<Transaction>();
                 ModelState.AddModelError(string.Empty, "Server error. Please contact administrator.");
             }
-
             return View(transacciones);
         }
 

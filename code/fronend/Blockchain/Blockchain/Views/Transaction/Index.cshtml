@@ -5,44 +5,51 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Index</h1>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.monto)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.origen)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.destino)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.monto)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.origen)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.destino)
-            </td>
-            <td>
-                @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
-                @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
-                @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+@*
+
+<td>
+    @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
+    @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
+    @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
+</td>*@
+
+
+<section class="container-fluid p-0 section-banner" style="background-image: url(https://www.belatrixsf.com/wp-content/uploads/2018/07/banner-insights-big.jpg);">
+    <div class="container section-banner-content-container">
+        <div class="section-banner-content">
+            <div class="page-title">
+                <div class="page-text" style="padding-left: 0">
+                    <h1 class="subtitle-2 white-text"> Lista de Tranasacciones</h1>
+                    <div class="line-decoration"></div>
+                    <p class="p-type1 white-text">Transacciones realizadas</p>
+                </div>
+            </div>
+            <div class="my-clearfix"></div>
+        </div>
+    </div>
+</section>
+
+<section class="container module-section">
+    <p>
+        <a asp-action="Create">AGREGAR NUEVA TRANSACCION</a>
+    </p>
+    <div class="row justify-content-center">
+
+        @foreach (var item in Model)
+        {
+            <div class="col-lg-6 col-12 article-box-wrapper insights-w">
+                <div class="article-box" style="background-image: url(https://www.transaccionesagv.com/img/img-04.jpg);">
+                    <div class="overlay my-transition"></div>
+                    <div class="info-box text-center">
+                        <h1 class="subtitle white-text">@Html.DisplayFor(modelItem => item.Monto)</h1>
+                        <p class="p-type1 white-text"> @Html.DisplayFor(modelItem => item.Origen)</p>
+                        <p class="p-type1 white-text"> @Html.DisplayFor(modelItem => item.Destino)</p>
+                        <h3 class="highlight-1 article-cta white-text my-transition">LEER MAS</h3>
+                    </div>
+                    <a href="/blog"></a>
+                </div>
+            </div>
+        }
+    </div>
+</section>
