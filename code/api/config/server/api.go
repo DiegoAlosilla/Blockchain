@@ -28,19 +28,19 @@ func InitServer(puerto string) Server {
 	router := mux.NewRouter()
 
 	transaccionController := controller.TransaccionController{}
-	transaccionController.SetPuerto(puerto)
-	// transaccionController.SetPuerto(puerto)
+	transaccionController.SetMyInfo(puerto)
 
 	router.HandleFunc("/", LinkOfRutas).Methods("GET")
 
 	transaccionRouter := router.PathPrefix("/app").Subrouter()
-	transaccionRouter.HandleFunc("/registro", transaccionController.RegistrarNodo).Methods("POST")
+
 	transaccionRouter.HandleFunc("/transaccion", transaccionController.RegistrarTransaccion).Methods("POST")
 	transaccionRouter.HandleFunc("/transacciones", transaccionController.ListarTransaccionAll).Methods("GET")
 
 	transaccionRouter.HandleFunc("/unidos", transaccionController.TodaLaRed).Methods("GET")
-	transaccionRouter.HandleFunc("/unidos", transaccionController.NotificandoLaRed).Methods("POST")
 	transaccionRouter.HandleFunc("/unirse", transaccionController.UnirseALaRed).Methods("POST")
+	transaccionRouter.HandleFunc("/unidos", transaccionController.NotificandoLaRed).Methods("POST")
+
 	// transaccionRouter.HandleFunc("/myhost", transaccionController.MyInfoHost).Methods("GET")
 	api.router = router
 	return api

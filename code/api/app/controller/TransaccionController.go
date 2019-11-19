@@ -1,8 +1,10 @@
 package controller
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"net/http"
 
@@ -12,12 +14,18 @@ import (
 var direccionesRemotas []model.Host
 var transaccionesBD []model.Transaccion
 var Puerto string
+var Ip string
 
 type TransaccionController struct {
 }
 
-func (controller *TransaccionController) SetPuerto(puerto string) {
+func (controller *TransaccionController) SetMyInfo(puerto string) {
 	Puerto = puerto
+	Ip = "localhost"
+
+	myHost := model.Host{Ip: Ip, Puerto: Puerto}
+	direccionesRemotas = append(direccionesRemotas, myHost)
+
 }
 func (controller *TransaccionController) MyInfoHost(response http.ResponseWriter, request *http.Request) {
 	json.NewEncoder(response).Encode(Puerto)
@@ -32,6 +40,7 @@ func (controller *TransaccionController) TodaLaRed(response http.ResponseWriter,
 		dataJson, _ := json.Marshal(direccionesRemotas)
 		response.Header().Set("Content-Type", "application/json")
 		response.Write(dataJson)
+		fmt.Print("Los host en la red son: ", direccionesRemotas)
 	}
 	fmt.Println()
 }
@@ -44,17 +53,6 @@ func (controller *TransaccionController) NotificandoLaRed(response http.Response
 	fmt.Print("Los host en la red son: ", direccionesRemotas)
 	fmt.Println()
 
-	// if direccionesRemotas == nil {
-	// 	vacio := []string{}
-	// 	dataJson, _ := json.Marshal(vacio)
-	// 	response.Header().Set("Content-Type", "application/json")
-	// 	response.Write(dataJson)
-	// } else {
-	// 	dataJson, _ := json.Marshal(direccionesRemotas)
-	// 	response.Header().Set("Content-Type", "application/json")
-	// 	response.Write(dataJson)
-	// }
-	// fmt.Println()
 }
 
 func (controller *TransaccionController) UnirseALaRed(response http.ResponseWriter, request *http.Request) {
@@ -64,25 +62,24 @@ func (controller *TransaccionController) UnirseALaRed(response http.ResponseWrit
 	direccionesRemotas = append(direccionesRemotas, host)
 
 	for _, host := range direccionesRemotas {
-		log.Printf("enviar a http://'%s'", host.Ip+":"+host.Puerto)
+		if host.Puerto != Puerto {
+			clienteHttp := &http.Client{}
+			url := "http://" + host.Ip + ":" + host.Puerto + "/app/unidos"
+			log.Printf("conectandose a '%s'", url)
+			dataComoJson, _ := json.Marshal(direccionesRemotas)
+			peticion, _ := http.NewRequest("POST", url, bytes.NewBuffer(dataComoJson))
+			respuesta, _ := clienteHttp.Do(peticion)
+			defer respuesta.Body.Close()
+			cuerpoRespuesta, _ := ioutil.ReadAll(respuesta.Body)
+			respuestaString := string(cuerpoRespuesta)
+			log.Printf("Cuerpo de respuesta del servidor: '%s'", respuestaString)
+		}
+
 	}
-	// clienteHttp := &http.Client{}
-	// url := "http://192.168.0.2:9099/app/unidos"
-	// peticion, _ := http.NewRequest("GET", url, nil)
-	// respuesta, _ := clienteHttp.Do(peticion)
-	// defer respuesta.Body.Close()
-	// cuerpoRespuesta, _ := ioutil.ReadAll(respuesta.Body)
-	// respuestaString := string(cuerpoRespuesta)
-	// log.Printf("Cuerpo de respuesta del servidor: '%s'", respuestaString)
 
 	json.NewEncoder(response).Encode(true)
 
 	fmt.Print("Nodo Agregado Exitosamente: ", host)
-	fmt.Println()
-}
-
-func (controller *TransaccionController) RegistrarNodo(response http.ResponseWriter, request *http.Request) {
-	fmt.Print("Registrar nodo ")
 	fmt.Println()
 }
 
