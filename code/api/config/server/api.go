@@ -28,6 +28,7 @@ func InitServer(puerto string) Server {
 	router := mux.NewRouter()
 
 	transaccionController := controller.TransaccionController{}
+	transaccionController.SetPuerto(puerto)
 	// transaccionController.SetPuerto(puerto)
 
 	router.HandleFunc("/", LinkOfRutas).Methods("GET")
@@ -37,16 +38,16 @@ func InitServer(puerto string) Server {
 	transaccionRouter.HandleFunc("/transaccion", transaccionController.RegistrarTransaccion).Methods("POST")
 	transaccionRouter.HandleFunc("/transacciones", transaccionController.ListarTransaccionAll).Methods("GET")
 
-	transaccionRouter.HandleFunc("/host", transaccionController.ListarHostConectados).Methods("GET")
-	transaccionRouter.HandleFunc("/host", transaccionController.ConectarUnHost).Methods("POST")
-	transaccionRouter.HandleFunc("/myhost", transaccionController.MyInfoHost).Methods("GET")
+	transaccionRouter.HandleFunc("/unidos", transaccionController.TodaLaRed).Methods("GET")
+	transaccionRouter.HandleFunc("/unidos", transaccionController.NotificandoLaRed).Methods("POST")
+	transaccionRouter.HandleFunc("/unirse", transaccionController.UnirseALaRed).Methods("POST")
+	// transaccionRouter.HandleFunc("/myhost", transaccionController.MyInfoHost).Methods("GET")
 	api.router = router
 	return api
 }
 
 func LinkOfRutas(w http.ResponseWriter, r *http.Request) {
-	// i := 123
-	// p := strconv.Itoa(pu)
+
 	result := "la ruta general esta en localhost:" + pu + "/app"
 	json.NewEncoder(w).Encode(result)
 }
