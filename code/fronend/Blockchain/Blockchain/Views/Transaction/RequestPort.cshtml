@@ -18,31 +18,96 @@
     </div>
 </section>
 
+<style>
+    .button {
+        font-family: 'Roboto',sans-serif;
+        color: #FFF;
+        text-transform: uppercase;
+        border: 1px solid #F89937;
+        display: inline-block;
+        border-radius: 38px;
+        width: 133px;
+        height: 40px;
+        text-align: center;
+        font-size: 13px;
+        line-height: 18px;
+        letter-spacing: 0;
+        opacity: 1;
+        border: 0px;
+        padding: 0px 0px;
+        margin: 0px;
+        background: #F89937 0% 0% no-repeat padding-box;
+        cursor: pointer;
+        font-weight: 600;
+    }
 
+        .button:hover {
+            background: #FFF 0% 0% no-repeat padding-box;
+            background: -moz-linear-gradient(top, #fff 0%, #fff 99%);
+            background: -webkit-linear-gradient(top, #fff 0%, #fff 99%);
+            background: linear-gradient(to bottom, #fff 0%, #fff 99%);
+            width: 133px;
+            height: 40px;
+            text-align: center;
+            font-size: 13px;
+            line-height: 18px;
+            letter-spacing: 0;
+            opacity: 1;
+            font-family: 'Roboto',sans-serif;
+            color: #F89937;
+        }
+
+    .input {
+        width: 100%;
+        max-width: 519px;
+        height: 41px;
+        background: #FFF 0% 0% no-repeat padding-box;
+        opacity: 1;
+        padding-top: 10px;
+        padding-bottom: 10px;
+        padding-left: 5px;
+        padding-right: 5px;
+        border-radius: 13px;
+        border-style: hidden;
+        font-family: 'Roboto',sans-serif;
+        font-size: 0.8rem;
+        font-style: oblique;
+        color: #707070;
+        margin-bottom: 10px;
+    }
+
+    .label {
+        font-family: 'Roboto',sans-serif;
+        font-size: 0.8rem;
+        font-weight: 700;
+        color: #fff;
+        margin: 0;
+        cursor: pointer;
+    }
+</style>
 
 <section class="container-fluid" style=" background-image: url(https://www.belatrixsf.com/wp-content/themes/Belatrix/images/cta-bg.jpg)">
     <div class="container py-5">
         <div class="col-12 col-md-6 mx-auto">
             <h2 class="text-center pt-5 pb-3 text-shadow text-white main-title">Ingresar Puerto de Conexion</h2>
-            
+
         </div>
         <div style="display:block; text-align:center">
 
 
             @using (Html.BeginForm("Index", "Transaction"))
             {
-                <div style="display:block">
-                    @Html.Label("Ingrese el puerto")
+                <div style="display:block; text-align:center">
                     @Html.TextBox("port")
-                    <input type="submit">
+                </div>
+
+                <div style="display:block; text-align:center; margin-top:10px">
+                    <input type="submit" class="button" value="Ingresar">
                 </div>
             }
 
-          
 
-            <div>
-                <a asp-action="Index">Back to List</a>
-            </div>
+
         </div>
     </div>
 
