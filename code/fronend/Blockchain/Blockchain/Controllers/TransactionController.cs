@@ -11,23 +11,30 @@ namespace Blockchain.Controllers
 {
     public class TransactionController : Controller
     {
+        string _port = "10.11.98.212:9000";
+
+
         private TransactionApi client = new TransactionApi();
         // GET: Transaction
-        
+
         public ActionResult RequestPort()
         {
- 
+
             return View();
         }
 
-        
+
         public ActionResult Index(string port)
         {
+            //port = TempData["puertoIndex"].ToString();
             if (port == null)
-            { port = TempData["puertoIndex"].ToString(); }
+            {
+                port = _port;
+                //
+            }
             ViewBag.port = port;
-            
-      
+
+
             IEnumerable<Transaction> transacciones = null;
             Task<HttpResponseMessage> response = client.Initial(port).GetAsync("transacciones");
             response.Wait();
@@ -67,9 +74,15 @@ namespace Blockchain.Controllers
         // POST: Transaction/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(string port,Transaction transaction )
+        public ActionResult Create(string port, Transaction transaction)
         {
-            port = TempData["puerto"].ToString();
+            
+            if (port == null)
+            {
+                port = _port;
+                //port = TempData["puertoIndex"].ToString();
+            }
+
             Task<HttpResponseMessage> postTask = client.Initial(port).PostAsJsonAsync("transaccion", transaction);
             postTask.Wait();
             HttpResponseMessage result = postTask.Result;

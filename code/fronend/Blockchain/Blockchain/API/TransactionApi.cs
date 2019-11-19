@@ -11,7 +11,7 @@ namespace Blockchain.API
         {
             HttpClient Client = new HttpClient
             {
-                BaseAddress = new Uri("http://localhost:"+ Port + "/app/")
+                BaseAddress = new Uri("http://"+ Port + "/app/")
             };
             return Client;
         }
